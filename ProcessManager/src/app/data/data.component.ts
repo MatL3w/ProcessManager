@@ -12,8 +12,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
   templateUrl: './data.component.html',
   styleUrls: ['./data.component.css'],
   animations: [
-    trigger('pState',
-    [
+    trigger('pState', [
       state(
         'normal',
         style({
@@ -29,7 +28,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
         })
       ),
       transition('normal => highlighted', animate(300)),
-      transition('normal => highlighted', animate(300)),
+      transition('highlighted => normal', animate(300)),
     ]),
   ],
 })
