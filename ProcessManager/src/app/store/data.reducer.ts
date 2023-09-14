@@ -1,5 +1,5 @@
 import { createReducer,on } from "@ngrx/store";
-import { change } from "./data.actions";
+import { change, changeName } from "./data.actions";
 
 export interface DataInterface {
   processId: number;
@@ -7,6 +7,8 @@ export interface DataInterface {
 const initialState:DataInterface = {
   processId: 0,
 };
+
+const processNameInit = 'default name';
 
 export const dataReducer = createReducer(
   initialState,
@@ -16,4 +18,12 @@ export const dataReducer = createReducer(
     };
     return newState;
   } )
+);
+
+export const processNameReducer = createReducer(
+  processNameInit,
+  on(changeName, (state: string, action) => {
+    const newName = action.value;
+    return newName;
+  })
 );
