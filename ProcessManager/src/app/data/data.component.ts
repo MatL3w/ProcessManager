@@ -1,16 +1,18 @@
-import { Component, signal, OnDestroy } from '@angular/core';
+import { Component, signal, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { change, changeName } from '../store/data.actions';
 import { DataInterface } from '../store/data.reducer';
 import { selectProcessId } from '../store/data.selectors';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { UserService } from './data.service';
 
 @Component({
   standalone: true,
   selector: 'app-data',
   templateUrl: './data.component.html',
   styleUrls: ['./data.component.css'],
+  providers: [UserService],
   animations: [
     trigger('pState', [
       state(
@@ -32,7 +34,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     ]),
   ],
 })
-export class DataComponent {
+export class DataComponent implements OnDestroy, OnInit{
   state = 'normal';
   procesId = signal(0);
   processName = signal('lol');
@@ -40,8 +42,10 @@ export class DataComponent {
   processName$subscription!: Subscription;
   data$!: Observable<Object>;
   data$subscription!: Subscription;
+  someInfo?: string;
+  someRandomInfo?: string;
 
-  constructor(private store: Store<{ data: {}, processName: string }>) {
+  constructor(private store: Store<{ data: {}, processName: string }>, private userService: UserService) {
     this.data$ = store.select(selectProcessId);
     this.data$subscription = this.data$.subscribe((value) => {
       this.procesId.set(value as number);
@@ -53,6 +57,13 @@ export class DataComponent {
       console.log(value);
     });
     this.GenerateNewProcessId();
+  }
+
+  ngOnInit() {
+    this.someInfo = this.userService.getFirstInfo();
+    this.userService.getAsynRandomData().then((data) => {
+      this.someRandomInfo = data;
+    });
   }
 
   ngOnDestroy() {
