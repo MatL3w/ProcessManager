@@ -3,4 +3,23 @@
     <p [@pState]="state" class="text-muted">Process Id: {{procesId()}}</p>
     <button class="btn btn-primary" (click)="clickChangeProcessId()">Generate new Id</button>
     <p>Process Name: {{processName()}}</p>
+</div>
+<div class="container">
+  <p>title</p>
+  <input [(ngModel)]="inputPostTitle">
+  <p>Content</p>
+  <input [(ngModel)]="inputPostContent">
+  <div>
+    <button class="btn btn-primary" (click)="sendNewPost()">Send</button>
   </div>
+  <div>
+    <button class="btn btn-primary" (click)="fetchPosts()" >Fetch Posts</button>
+  </div>
+  <div>
+    <div *ngFor ="let post of Posts">
+      <p>{{post.title}}</p>
+      <p>{{post.content}}</p>
+    </div>
+  </div>
+
+</div>

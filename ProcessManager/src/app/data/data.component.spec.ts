@@ -1,4 +1,4 @@
-import {TestBed, async } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { DataComponent } from './data.component';
 import { StoreModule } from '@ngrx/store';
 import { UserService } from './data.service';

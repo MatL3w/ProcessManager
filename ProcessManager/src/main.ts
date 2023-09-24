@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { importProvidersFrom } from '@angular/core';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
 import { provideStore } from '@ngrx/store';
@@ -8,6 +8,7 @@ import { provideEffects } from '@ngrx/effects';
 import { DataEffects } from './app/store/data.effects';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -17,5 +18,6 @@ bootstrapApplication(AppComponent, {
       processName: processNameReducer,
     }),
     provideEffects([DataEffects]),
+    provideHttpClient(),
   ],
 });

@@ -1,18 +1,22 @@
 import { Component, signal, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 import { change, changeName } from '../store/data.actions';
 import { DataInterface } from '../store/data.reducer';
 import { selectProcessId } from '../store/data.selectors';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { UserService } from './data.service';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-data',
   templateUrl: './data.component.html',
   styleUrls: ['./data.component.css'],
-  providers: [UserService],
+  imports: [FormsModule, CommonModule],
+  providers: [UserService, HttpClient],
   animations: [
     trigger('pState', [
       state(
@@ -34,7 +38,7 @@ import { UserService } from './data.service';
     ]),
   ],
 })
-export class DataComponent implements OnDestroy, OnInit{
+export class DataComponent implements OnDestroy, OnInit {
   state = 'normal';
   procesId = signal(0);
   processName = signal('lol');
@@ -44,8 +48,15 @@ export class DataComponent implements OnDestroy, OnInit{
   data$subscription!: Subscription;
   someInfo?: string;
   someRandomInfo?: string;
+  inputPostTitle: string = '';
+  inputPostContent: string = '';
+  Posts?: { title: string; content: string }[];
 
-  constructor(private store: Store<{ data: {}, processName: string }>, private userService: UserService) {
+  constructor(
+    private store: Store<{ data: {}; processName: string }>,
+    private userService: UserService,
+    private http: HttpClient
+  ) {
     this.data$ = store.select(selectProcessId);
     this.data$subscription = this.data$.subscribe((value) => {
       this.procesId.set(value as number);
@@ -83,7 +94,44 @@ export class DataComponent implements OnDestroy, OnInit{
       change({ value: Number((Math.random() * 1000000).toFixed(0)) })
     );
     this.store.dispatch(
-      changeName({ value: ((Math.random() * 1000000).toFixed(0)) })
+      changeName({ value: (Math.random() * 1000000).toFixed(0) })
     );
+  }
+
+  sendNewPost() {
+    const post = {
+      title: this.inputPostTitle,
+      content: this.inputPostContent,
+    };
+    console.log('Sending request');
+    this.http
+      .post(
+        'https://process-manager-e750a-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+        post
+      )
+      .subscribe((response) => {
+        console.log('Response: ');
+        console.log(response);
+      });
+  }
+
+  fetchPosts() {
+        this.http
+      .get < { title: string, content: string }[]>(
+        'https://process-manager-e750a-default-rtdb.europe-west1.firebasedatabase.app/posts.json'
+        )
+        .pipe(map(resData=> {
+          const data = [];
+          for (const key in resData) {
+            if (resData.hasOwnProperty(key)) {
+              data.push({ ...resData[key] });
+            }
+          }
+          return data;
+        }))
+          .subscribe(posts => {
+          console.log(posts);
+          this.Posts = posts;
+      })
   }
 }
